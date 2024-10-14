@@ -70,7 +70,7 @@ resource "aws_route_table" "public_route_table" {
   }
   route {
     ipv6_cidr_block = "::/0"
-    gateway_id = aws_internet_gateway.terraform_gw.id
+    gateway_id      = aws_internet_gateway.terraform_gw.id
   }
   route {
     cidr_block = aws_vpc.vpc_a1.cidr_block
@@ -78,14 +78,14 @@ resource "aws_route_table" "public_route_table" {
   }
   route {
     ipv6_cidr_block = aws_vpc.vpc_a1.ipv6_cidr_block
-    gateway_id = "local"
+    gateway_id      = "local"
   }
   tags = {
     Name = "public_route_table"
   }
 }
 resource "aws_eip" "nat" {
-  domain   = "vpc"
+  domain = "vpc"
 }
 resource "aws_nat_gateway" "public_nat" {
   allocation_id = aws_eip.nat.id
@@ -109,7 +109,7 @@ resource "aws_route_table" "private_route_table" {
   }
   route {
     ipv6_cidr_block = aws_vpc.vpc_a1.ipv6_cidr_block
-    gateway_id = "local"
+    gateway_id      = "local"
   }
   tags = {
     Name = "private_route_table"
@@ -156,17 +156,17 @@ resource "aws_security_group" "ec2_instance_asg" {
   vpc_id      = aws_vpc.vpc_a1.id
 }
 resource "aws_vpc_security_group_ingress_rule" "inbound_allow_https_asg" {
-  security_group_id = aws_security_group.ec2_instance_asg.id
-  from_port         = 443
-  to_port           = 443
-  ip_protocol       = "tcp"
+  security_group_id            = aws_security_group.ec2_instance_asg.id
+  from_port                    = 443
+  to_port                      = 443
+  ip_protocol                  = "tcp"
   referenced_security_group_id = aws_security_group.load_balancer_SG.id
 }
 resource "aws_vpc_security_group_ingress_rule" "inbound_allow_http_asg" {
-  security_group_id = aws_security_group.ec2_instance_asg.id
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
+  security_group_id            = aws_security_group.ec2_instance_asg.id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
   referenced_security_group_id = aws_security_group.load_balancer_SG.id
 }
 resource "aws_vpc_security_group_egress_rule" "outbound_allow_all_asg" {

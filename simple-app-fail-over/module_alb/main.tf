@@ -11,10 +11,10 @@ at private subnets
 provider "aws" {
   region = var.region
 }
-data "aws_security_group" "lb_sg"{
+data "aws_security_group" "lb_sg" {
   id = var.load_balancer_security_group_id
 }
-data "aws_security_group" "ec2_sg"{
+data "aws_security_group" "ec2_sg" {
   id = var.asg_instance_security_group_id
 }
 data "aws_subnet" "public_1a" {
@@ -23,28 +23,28 @@ data "aws_subnet" "public_1a" {
 data "aws_subnet" "public_1b" {
   id = var.subnet_public_1b_id
 }
-data "aws_subnet" "private_1a"{
+data "aws_subnet" "private_1a" {
   id = var.subnet_private_1a_id
 }
-data "aws_subnet" "private_1b"{
+data "aws_subnet" "private_1b" {
   id = var.subnet_private_1b_id
 }
 data "aws_vpc" "my_vpc" {
   id = var.vpc_id
 }
 resource "aws_launch_template" "ec2_for_alb" {
-  name = "LT1"
+  name                   = "LT1"
   vpc_security_group_ids = [data.aws_security_group.ec2_sg.id]
-  instance_type = "t2.micro"
-  image_id = var.instance_image_id
-  user_data = filebase64("./module_alb/zone_display.sh")
+  instance_type          = "t2.micro"
+  image_id               = var.instance_image_id
+  user_data              = filebase64("./module_alb/zone_display.sh")
 }
 resource "aws_alb" "application_load_balancer" {
-  name = "alb1"
-  internal = false
+  name               = "alb1"
+  internal           = false
   load_balancer_type = "application"
-  security_groups = [data.aws_security_group.lb_sg.id]
-  subnets = [data.aws_subnet.public_1a.id, data.aws_subnet.public_1b.id]
+  security_groups    = [data.aws_security_group.lb_sg.id]
+  subnets            = [data.aws_subnet.public_1a.id, data.aws_subnet.public_1b.id]
 }
 resource "aws_alb_target_group" "alb_tg" {
   name        = "TG1"
@@ -55,8 +55,8 @@ resource "aws_alb_target_group" "alb_tg" {
 }
 resource "aws_alb_listener" "application_listener" {
   load_balancer_arn = aws_alb.application_load_balancer.arn
-  port = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
   default_action {
     target_group_arn = aws_alb_target_group.alb_tg.arn
     type             = "forward"
@@ -79,7 +79,7 @@ resource "aws_autoscaling_group" "ALB_auto_scaling" {
 }
 resource "aws_autoscaling_attachment" "ALB_attachment" {
   autoscaling_group_name = aws_autoscaling_group.ALB_auto_scaling.name
-  lb_target_group_arn = aws_alb_target_group.alb_tg.arn
+  lb_target_group_arn    = aws_alb_target_group.alb_tg.arn
 }
 
 
@@ -108,8 +108,8 @@ resource "aws_route53_record" "example" {
 }
 resource "aws_alb_listener" "application_listener_https" {
   load_balancer_arn = aws_alb.application_load_balancer.arn
-  port = 443
-  protocol = "HTTPS"
+  port              = 443
+  protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate.roberto_practice_certificate.arn
   default_action {
     target_group_arn = aws_alb_target_group.alb_tg.arn
