@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "lambda-document-db-fail-over"
+version = "0.1.0"
+description = ""
+authors = ["rob <robertointerface@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+boto3 = "^1.35.47"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
