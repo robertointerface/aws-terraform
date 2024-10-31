@@ -1,6 +1,8 @@
 # aws-terraform
 Repository to show aws architecture and terraform skills.
 
+# 
+
 ## Introduction
 Terraform recipes for multiple AWS architectural patterns. The repository is intended for  learning purposes and not for 
 commercialization.
