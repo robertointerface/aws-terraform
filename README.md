@@ -1,14 +1,15 @@
 # aws-terraform
+Repository to show aws architecture and terraform skills.
 
 ## Introduction
-Terraform recipies for multiple AWS architectural patterns. Repository is intended for  learning purposes and not for 
+Terraform recipes for multiple AWS architectural patterns. The repository is intended for  learning purposes and not for 
 commercialization.
 
 ## Requirements
-If anyone would like to try to deploy these recipies on their AWS accounts from their local devices, these 2 requirements
+If anyone would like to try to deploy these recipes on their AWS accounts from their local devices, these 2 requirements
 must be met. <br>
 1 - Terraform-cli installed locally, https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
-2 - aws-cli installed with aws credentials that are allowed to deploy components defined on terraform code.
+2 - aws-cli installed with aws credentials that allow the deployment of components defined in the terraform code.
 
 ## Applications
 
