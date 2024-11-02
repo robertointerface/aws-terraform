@@ -17,9 +17,15 @@ variable "lambda_ecr_repository" {
   type = string
 }
 variable "lambda_image_tag" {
-  type = string
+  type    = string
   default = "latest"
 }
 variable "mongo_db_cluster_id_ireland_region" {
+  type = string
+}
+variable "mongo_db_global_cluster_arn" {
+  type = string
+}
+variable "mongo_db_cluster_arn_london_region" {
   type = string
 }

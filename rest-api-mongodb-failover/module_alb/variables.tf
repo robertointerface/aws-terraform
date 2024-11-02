@@ -1,5 +1,5 @@
 variable "region" {
-  type = string
+  type    = string
   default = "eu-west-2"
 }
 variable "vpc_id" {
@@ -15,6 +15,6 @@ variable "load_balancer_security_group_id" {
   type = string
 }
 variable "load_balancer_internal" {
-  type = bool
+  type    = bool
   default = false
 }

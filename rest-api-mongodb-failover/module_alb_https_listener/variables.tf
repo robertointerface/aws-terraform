@@ -11,6 +11,6 @@ variable "hosted_zone_name" {
   type = string
 }
 variable "region" {
-  type = string
+  type    = string
   default = "eu-west-2"
 }

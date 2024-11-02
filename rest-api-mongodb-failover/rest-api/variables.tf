@@ -7,10 +7,10 @@ variable "vpc_id" {
 variable "rest_api_internal_load_balancer" {
   type = bool
 }
-variable "alb_subnet_id_first_option"{
+variable "alb_subnet_id_first_option" {
   type = string
 }
-variable "alb_subnet_id_second_option"{
+variable "alb_subnet_id_second_option" {
   type = string
 }
 variable "ecs_service_subnet_id_first_option" {
@@ -22,13 +22,13 @@ variable "ecs_service_subnet_id_second_option" {
 variable "document_db_host" {
   type = string
 }
-variable "vcp_link_subnet_1_id"{
+variable "vcp_link_subnet_1_id" {
   type = string
 }
-variable "vcp_link_subnet_2_id"{
+variable "vcp_link_subnet_2_id" {
   type = string
 }
-variable "vcp_link_subnet_3_id"{
+variable "vcp_link_subnet_3_id" {
   type = string
 }
 variable "mongo_db_security_group_id" {

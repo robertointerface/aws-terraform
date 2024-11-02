@@ -1,25 +1,25 @@
 locals {
-  domain_name                    = var.domain_name
-  hosted_zone_name               = var.hosted_zone_name
-  vpc_id                         = var.london_vpc_id
-  private_subnet_1a_id           = var.london_region_subnets_ids[0]
-  private_subnet_1b_id           = var.london_region_subnets_ids[1]
-  private_subnet_1c_id           = var.london_region_subnets_ids[2]
-  london_db_host                 = var.mongo_db_cluster_host_london_region
-  london_mongo_security_id       = var.mongo_db_security_group_id_london_region
-  vpc_id_ireland                  = var.ireland_vpc_id
-  private_subnet_ireland_1a_id    = var.ireland_region_subnets_ids[0]
-  private_subnet_ireland_1b_id    = var.ireland_region_subnets_ids[1]
-  private_subnet_ireland_1c_id    = var.ireland_region_subnets_ids[2]
-  ireland_db_host                 = var.mongo_db_cluster_host_ireland_region
-  ireland_mongo_security_id       = var.mongo_db_security_group_id_ireland_region
-  internal_load_balancer          = true
+  domain_name                  = var.domain_name
+  hosted_zone_name             = var.hosted_zone_name
+  vpc_id                       = var.london_vpc_id
+  private_subnet_1a_id         = var.london_region_private_subnets_ids[0]
+  private_subnet_1b_id         = var.london_region_private_subnets_ids[1]
+  private_subnet_1c_id         = var.london_region_private_subnets_ids[2]
+  london_db_host               = var.mongo_db_cluster_endpoint_london_region
+  london_mongo_security_id     = var.mongo_db_security_group_id_london_region
+  vpc_id_ireland               = var.ireland_vpc_id
+  private_subnet_ireland_1a_id = var.ireland_region_private_subnets_ids[0]
+  private_subnet_ireland_1b_id = var.ireland_region_private_subnets_ids[1]
+  private_subnet_ireland_1c_id = var.ireland_region_private_subnets_ids[2]
+  ireland_db_host              = var.mongo_db_cluster_endpoint_ireland_region
+  ireland_mongo_security_id    = var.mongo_db_security_group_id_ireland_region
+  internal_load_balancer       = true
 }
 data "aws_route53_zone" "roberto_practice_zone" {
   name         = local.domain_name
   private_zone = false
 }
-
+# Rest-api on London region, that includes ALB, ECS and API-Gateway
 module "rest_api_london" {
   source                              = "./rest-api"
   region                              = "eu-west-2"
@@ -37,11 +37,14 @@ module "rest_api_london" {
   vcp_link_subnet_3_id                = local.private_subnet_1c_id
   mongo_db_security_group_id          = local.london_mongo_security_id
 }
+# Cloudwatch alarm that is trigger by route 53 health-check.
 module "route_53_health_check_alarm" {
-  source = "./database-fail-over-alarm"
-  region = "us-east-1"
+  source          = "./database-fail-over-alarm"
+  region          = "us-east-1"
   health_check_id = aws_route53_health_check.health_check_alb_port_443.id
 }
+# route 53 health check on api-gateway endpoint on London Region, Note the attribute "fqdn" needs to be the
+# api gateway endpoint and not the domain name. The reason is that the health check is monitored even after it
 resource "aws_route53_health_check" "health_check_alb_port_443" {
   fqdn              = "${module.rest_api_london.api_gateway_id}.execute-api.eu-west-2.amazonaws.com"
   port              = 443
@@ -118,11 +121,13 @@ resource "aws_route53_record" "ecommerce_api_gateway_record_ireland" {
 }
 # Lambda to perform documentDB fail-over
 module "lambda_document_db_fail_over" {
-  source = "./lambda_document_db_fail_over/infrastructure"
-  region = "eu-west-1"
-  lambda_name = "document_db_fail_over"
-  global_document_db_cluster_name = var.document_db_global_cluster_name
-  lambda_ecr_repository = "document-db-switch-over-lambda"
-  sns_topic_name = module.route_53_health_check_alarm.sns_topic_name
-  mongo_db_cluster_id_ireland_region = var.mongo_db_cluster_id_ireland_region
+  source                             = "./lambda_document_db_fail_over/infrastructure"
+  region                             = "eu-west-1"
+  lambda_name                        = "document_db_fail_over"
+  global_document_db_cluster_name    = var.document_db_global_cluster_name
+  lambda_ecr_repository              = var.fail_over_lambda_ecr_repository
+  sns_topic_name                     = module.route_53_health_check_alarm.sns_topic_name
+  mongo_db_cluster_id_ireland_region = var.mongo_db_cluster_ARN_ireland_region
+  mongo_db_global_cluster_arn        = var.mongo_db_global_cluster_arn
+  mongo_db_cluster_arn_london_region = var.mongo_db_cluster_arn_london_region
 }

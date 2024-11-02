@@ -18,10 +18,10 @@ resource "aws_iam_policy" "allow_lambda_write_logs" {
       {
         Effect = "Allow"
         Action = [
-            "ecr:GetAuthorizationToken",
-            "ecr:BatchCheckLayerAvailability",
-            "ecr:GetDownloadUrlForLayer",
-            "ecr:BatchGetImage"
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
         ],
         Resource = "*"
       }
@@ -34,11 +34,19 @@ resource "aws_iam_policy" "allow_lambda_fail_over_global_document_db_cluster" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action   = "rds:FailoverGlobalCluster"
-        Effect   = "Allow"
+        Action = "rds:FailoverGlobalCluster"
+        Effect = "Allow"
         Resource = [
-          "arn:aws:rds::858290205983:global-cluster:ecommerce-ireland-cluster",
-          var.mongo_db_cluster_id_ireland_region
+          var.mongo_db_global_cluster_arn,
+          var.mongo_db_cluster_id_ireland_region,
+          var.mongo_db_cluster_arn_london_region
+        ]
+      },
+        {
+        Action = "rds:DescribeGlobalClusters"
+        Effect = "Allow"
+        Resource = [
+          var.mongo_db_global_cluster_arn,
         ]
       },
     ]
@@ -75,17 +83,17 @@ resource "aws_lambda_function" "document_db_fail_over" {
   function_name = var.lambda_name
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
-  image_uri = "${data.aws_ecr_repository.document_db_image_repository.repository_url}:${var.lambda_image_tag}"
-  timeout = 30
+  image_uri     = "${data.aws_ecr_repository.document_db_image_repository.repository_url}:${var.lambda_image_tag}"
+  timeout       = 30
 }
 
 provider "aws" {
-  alias  = "east"  # Aliased provider for cross-region resources
+  alias  = "east" # Aliased provider for cross-region resources
   region = "us-east-1"
 }
 data "aws_sns_topic" "cross_region_topic" {
-  provider = aws.east
-  name     = var.sns_topic_name
+  provider   = aws.east
+  name       = var.sns_topic_name
   depends_on = [var.sns_topic_name]
 }
 resource "aws_sns_topic_subscription" "lambda_subscription_to_topic_arn" {

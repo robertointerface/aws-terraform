@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_sns_topic" "sns_topic" {
-    name = "sns-health"
+  name = "sns-health"
 }
 resource "aws_cloudwatch_metric_alarm" "healthcheck_alarm" {
   alarm_name          = "route-53-health_check_alarm"
@@ -20,6 +20,6 @@ resource "aws_cloudwatch_metric_alarm" "healthcheck_alarm" {
   treat_missing_data  = "breaching"
 
   dimensions = {
-      HealthCheckId = var.health_check_id
-   }
+    HealthCheckId = var.health_check_id
+  }
 }
