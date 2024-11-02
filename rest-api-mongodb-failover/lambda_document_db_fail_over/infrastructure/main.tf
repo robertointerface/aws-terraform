@@ -86,7 +86,7 @@ resource "aws_lambda_function" "document_db_fail_over" {
   image_uri     = "${data.aws_ecr_repository.document_db_image_repository.repository_url}:${var.lambda_image_tag}"
   timeout       = 30
 }
-
+# The SNS topic is on the us-east-1 as a cloudwatch alarm can not use an SNS topic from a different region.
 provider "aws" {
   alias  = "east" # Aliased provider for cross-region resources
   region = "us-east-1"
